@@ -4824,7 +4824,7 @@ function createBaseShutterGraphic(realWidth, additionalLength, numLaths, lath, b
 <script>
     window.addEventListener('load', () => {
         initializeAdminControls(); 
-        const excelFileUrl = 'https://raw.githubusercontent.com/rob-hyrons/LT-Calculateur-de-volet-roulant/blob/main/Calculation%20Data.xlsx';
+        const excelFileUrl = 'https://raw.githubusercontent.com/rob-hyrons/LT-Calculateur-de-volet-roulant/main/Calculation%20Data.xlsx';
         const statusDiv = document.getElementById('import-status');
         statusDiv.textContent = 'Loading data from repository...'; statusDiv.style.color = '#555';
         fetch(excelFileUrl).then(response => {
