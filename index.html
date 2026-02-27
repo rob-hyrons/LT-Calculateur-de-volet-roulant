@@ -1744,49 +1744,23 @@ function filterLathDropdownByWidth(curtainWidth) {
 function filterBottomLathDropdown(selectedLathIndex) {
     if (!dom.bottomLathType || !bottomLathData || bottomLathData.length === 0) return;
     
-    // 1. Find the "Lath type" header from the selected primary lath
-    let targetHeader = "";
-    if (selectedLathIndex !== "" && lathData[selectedLathIndex]) {
-        const lath = lathData[selectedLathIndex];
-        const typeKey = Object.keys(lath).find(k => k.toLowerCase().trim() === 'lath type');
-        if (typeKey) {
-            targetHeader = String(lath[typeKey]).trim(); 
-        }
-    }
-
-    // 2. Save the current selection NAME so we don't lose it during the refresh
+    // Save the current selection name so we don't lose it when the list refreshes
     let previousSelectedName = "";
     if (dom.bottomLathType.value !== "" && bottomLathData[dom.bottomLathType.value]) {
         const oldNameKey = Object.keys(bottomLathData[dom.bottomLathType.value]).find(k => k.toLowerCase().includes('bottom lath name'));
         previousSelectedName = bottomLathData[dom.bottomLathType.value][oldNameKey];
     }
     
-    // 3. Clear the dropdown
+    // Clear the dropdown
     dom.bottomLathType.innerHTML = '<option value="">-- Select an option --</option>';
 
+    // Add EVERY item from the Bottom Lath sheet
     bottomLathData.forEach((bLath, index) => {
-        // Robust lookup for the "Bottom lath name" column
         const nameKey = Object.keys(bLath).find(k => k.toLowerCase().trim() === 'bottom lath name');
         const bLathName = bLath[nameKey];
 
-        // CRITICAL: Skip any row that doesn't have an actual name (prevents "Bottom Lath 13" etc)
-        if (!bLathName || String(bLathName).trim() === "" || String(bLathName).includes("undefined")) {
-            return; 
-        }
-
-        let isAllowed = false;
-        if (targetHeader === "") {
-            isAllowed = true; // Show all if no lath type filter is active
-        } else {
-            // Check the column matching the Lath Type (e.g., "75mm lath")
-            const bLathColKey = Object.keys(bLath).find(k => k.trim().toLowerCase() === targetHeader.toLowerCase());
-            if (bLathColKey) {
-                const cellValue = String(bLath[bLathColKey]).toLowerCase().trim();
-                if (cellValue === 'yes' || cellValue === 'y') isAllowed = true;
-            }
-        }
-
-        if (isAllowed) {
+        // Only add if there is actually a name in that row
+        if (bLathName && String(bLathName).trim() !== "" && String(bLathName) !== "undefined") {
             const option = document.createElement('option');
             option.value = index;
             option.textContent = bLathName;
@@ -1794,7 +1768,7 @@ function filterBottomLathDropdown(selectedLathIndex) {
         }
     });
 
-    // 4. Restore selection if the name still exists in the filtered list
+    // Try to restore the previous selection by name
     if (previousSelectedName) {
         for (let i = 0; i < dom.bottomLathType.options.length; i++) {
             if (dom.bottomLathType.options[i].textContent === previousSelectedName) {
@@ -1804,8 +1778,8 @@ function filterBottomLathDropdown(selectedLathIndex) {
         }
     }
     
-    // Fallback: If nothing is selected, default to the first valid item
-    if (dom.bottomLathType.options.length > 1) {
+    // Default to first item if nothing was selected
+    if (dom.bottomLathType.options.length > 1 && dom.bottomLathType.selectedIndex <= 0) {
         dom.bottomLathType.selectedIndex = 1;
     }
 }
